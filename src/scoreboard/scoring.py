@@ -1,4 +1,4 @@
-"""Scoring rules.
+"""Scoring rules.Updated by Hadji
 
 Every function here is pure: it takes values and returns values, touches no
 database, no clock and no network. That is why this module has the densest
