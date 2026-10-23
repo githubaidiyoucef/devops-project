@@ -4,12 +4,6 @@ A small scoreboard for a capture-the-flag (CTF) competition. Teams register and
 submit flags. The scoreboard ranks the teams. A challenge is worth fewer points
 when more teams solve it.
 
-**You use this application in every lab session of the DevOps module.** You
-put it in Git and give it a pipeline. You put it in a container and deploy it
-to a cluster. You deliver it with GitOps, measure its errors and protect its
-supply chain. The code is small on purpose: the lab work is about DevOps, not
-about the code.
-
 Read this file once, at the start of lab sheet 1. Each lab sheet takes about
 one hour. **Are you new to Linux or to the command line?** Start with
 `docs/STUDENT-GUIDE.md`. It explains every step of every lab sheet, from the
@@ -41,47 +35,6 @@ table at the end of `docs/LAB-MAP.md` lists all of them.
 > in `docs/FLAGS.md` are public on purpose.
 
 ---
-
-## Quick start
-
-```bash
-make install                           # .venv with the pinned dependencies,
-                                       # plus `pip install -e .` (see below)
-make test                              # 73 tests, about 3 seconds
-make lint                              # silent when clean
-ADMIN_TOKEN=local-dev-token make run   # http://localhost:8000/docs
-```
-
-`make install` uses the first Python 3.11 or later that it finds. It prefers
-3.12. To choose the version yourself, run `make install PY=python3.12`. You can
-also do the same steps by hand:
-
-```bash
-python3.12 -m venv .venv && . .venv/bin/activate
-pip install -r requirements-dev.txt
-pip install -e .                       # puts scoreboard/ on the path -- the
-                                       # tests cannot import it without this
-```
-
-Then, in a second terminal:
-
-```bash
-curl -s localhost:8000/healthz
-curl -s -X POST localhost:8000/teams \
-     -H 'content-type: application/json' -d '{"name":"my-team"}'
-curl -s -X POST localhost:8000/submit -H 'content-type: application/json' \
-     -d '{"team":"my-team","challenge":"warmup-banner","flag":"UEM9{read_the_banner}"}'
-curl -s localhost:8000/scoreboard
-```
-
-The flags of the demonstration competition are in `docs/FLAGS.md`.
-
-`tools/smoke.sh` runs all these requests against any host and port, for
-example `./tools/smoke.sh localhost:8080`. You use it from lab sheet 3. It
-checks that a container or a deployment really *works*. A process that
-*runs* does not always work. Be careful: if `ADMIN_TOKEN` is exported in your
-shell, the smoke test also calls `/admin/reset`. This deletes the whole
-competition.
 
 ---
 
