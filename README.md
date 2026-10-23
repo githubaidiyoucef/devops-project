@@ -4,12 +4,6 @@ A small scoreboard for a capture-the-flag (CTF) competition. Teams register and
 submit flags. The scoreboard ranks the teams. A challenge is worth fewer points
 when more teams solve it.
 
-**You use this application in every lab session of the DevOps module.** You
-put it in Git and give it a pipeline. You put it in a container and deploy it
-to a cluster. You deliver it with GitOps, measure its errors and protect its
-supply chain. The code is small on purpose: the lab work is about DevOps, not
-about the code.
-
 Read this file once, at the start of lab sheet 1. Each lab sheet takes about
 one hour. **Are you new to Linux or to the command line?** Start with
 `docs/STUDENT-GUIDE.md`. It explains every step of every lab sheet, from the
