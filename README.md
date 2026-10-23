@@ -36,47 +36,6 @@ table at the end of `docs/LAB-MAP.md` lists all of them.
 
 ---
 
-## Quick start
-
-```bash
-make install                           # .venv with the pinned dependencies,
-                                       # plus `pip install -e .` (see below)
-make test                              # 73 tests, about 3 seconds
-make lint                              # silent when clean
-ADMIN_TOKEN=local-dev-token make run   # http://localhost:8000/docs
-```
-
-`make install` uses the first Python 3.11 or later that it finds. It prefers
-3.12. To choose the version yourself, run `make install PY=python3.12`. You can
-also do the same steps by hand:
-
-```bash
-python3.12 -m venv .venv && . .venv/bin/activate
-pip install -r requirements-dev.txt
-pip install -e .                       # puts scoreboard/ on the path -- the
-                                       # tests cannot import it without this
-```
-
-Then, in a second terminal:
-
-```bash
-curl -s localhost:8000/healthz
-curl -s -X POST localhost:8000/teams \
-     -H 'content-type: application/json' -d '{"name":"my-team"}'
-curl -s -X POST localhost:8000/submit -H 'content-type: application/json' \
-     -d '{"team":"my-team","challenge":"warmup-banner","flag":"UEM9{read_the_banner}"}'
-curl -s localhost:8000/scoreboard
-```
-
-The flags of the demonstration competition are in `docs/FLAGS.md`.
-
-`tools/smoke.sh` runs all these requests against any host and port, for
-example `./tools/smoke.sh localhost:8080`. You use it from lab sheet 3. It
-checks that a container or a deployment really *works*. A process that
-*runs* does not always work. Be careful: if `ADMIN_TOKEN` is exported in your
-shell, the smoke test also calls `/admin/reset`. This deletes the whole
-competition.
-
 ---
 
 ## What is missing on purpose
