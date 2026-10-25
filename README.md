@@ -249,3 +249,5 @@ MIT. See `LICENSE`. You may keep this repository and put it in your portfolio.
 
 ## Contributors
 - Youcef Abdelkader AIDI
+- Hadji Youcef Houssem Eddine
+- Zernouh Lakhdar
