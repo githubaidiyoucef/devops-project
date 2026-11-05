@@ -1,0 +1,79 @@
+# TP2 answers
+
+## Exercise 1
+
+**(a)** `pull_request` runs the checks on the proposed change before it reaches `main`. This lets branch protection block the merge until the pipeline is green, and it also covers other branches and forks. A `push` to `main` only reports a problem after the code is already there.
+
+**(b)** Lint is the cheapest and fastest gate. It catches syntax and style errors in seconds, so a bad change fails fast without paying for the slower gates.
+
+**(c)** With a 20-minute suite, an error that lint would catch in 2 seconds would cost 20 minutes of waiting and compute. The cheap-first order matters more as the expensive gate gets slower.
+
+## Exercise 2
+
+**(a)** `git commit --no-verify` (or `-n`) skips a pre-commit hook.
+
+**(b)** These people can still put a detectable secret on `main`:
+- admins, if the rule does not apply to them ("Do not allow bypassing the above settings" is unticked);
+- anyone who edits `ci.yml` in their own pull request to remove or weaken the secret scan, because the PR runs its own version of the workflow;
+- anyone who adds the secret to an allowlist or a `.gitleaksignore` file.
+
+## Exercise 3
+
+**(a)** Error line from the log:
+
+```
+E   ModuleNotFoundError: No module named 'scoreboard'
+```
+
+It came from `tests/conftest.py`, line 17 (`from scoreboard.app import create_app`). pytest ended with exit code 4, so it failed before any test ran.
+
+**(b)** The project uses a src layout: the package is in `src/scoreboard/`, not at the repository root. `python -m pytest` adds the current folder to `sys.path`, but `src/` is not in it, so `scoreboard` cannot be imported. `pip install -e .` installs the project in editable mode and makes `src/scoreboard` importable. Without that line, the import fails even though the code is there.
+
+**(c)** `make install` ran it for me (the install target of the Makefile runs `pip install -e .`).
+
+## Exercise 4
+
+The full table is in `docs/TP2_diagnosis.md`. It was committed and pushed before any fix commit. Summary:
+
+| Defect | Gate that failed | Name in the log | How it failed |
+|---|---|---|---|
+| Test 1 | tests | `tests/test_api.py::test_the_second_solver_is_not` | assertion (`assert True is False`) |
+| Test 2 | tests | `tests/test_challenges.py::test_an_empty_document_defines_no_challenges` | exception (`ChallengeFileError`) |
+| Credential | secret scan | gitleaks: "leaks found: 1" | not applicable |
+| Dependency | dependency audit | `python-multipart 0.0.6` (PYSEC-2024-38 and others) | not applicable |
+
+The secret scan log shows no details (the pipeline runs gitleaks without `-v`). So the exact location of the secret (`src/scoreboard/db.py`) was only found in the diff, after the diagnosis commit.
+
+## Exercise 5
+
+Repairs (no test was changed):
+- `src/scoreboard/app.py`: restored `first_blood = nth == 1` (the defect had changed it to `nth <= 2`).
+- `src/scoreboard/challenges.py`: restored the guard `if data is None: return []` in `parse`.
+- `src/scoreboard/db.py`: removed the fake access key.
+- `requirements.txt`: restored `python-multipart==0.0.32` (the defect had pinned `0.0.6`).
+
+**(a)** `python-multipart` is a **direct** dependency. It is declared in `pyproject.toml`, line 22: `"python-multipart>=0.0.9"`.
+
+**(b)** I ran:
+
+```
+grep -n multipart pyproject.toml
+pip show python-multipart | grep -i required-by
+```
+
+The first command shows the package declared in the project's own dependencies. The second printed an empty `Required-by:`, so no other installed package needs it.
+
+## Screenshots
+
+All commands run locally are in `docs/screenshots/`:
+
+- `01-make-install.png`: make install
+- `02-make-test-lint-baseline.png`: make test (73 passed) and make lint before the lab
+- `03-partC-remove-install.png`: Part C, removing `pip install -e .` on a temporary branch
+- `04-partD-seed-and-push.png`: Part D, seed.py, first push failed (no internet), second push worked
+- `05-pipeline-log-dependency-audit.png`: GitHub log of the dependency audit (python-multipart 0.0.6)
+- `06-diagnosis-commit.png`: diagnosis committed and pushed before any fix
+- `07-git-log-and-requirements-diff.png`: seed commits and the requirements.txt change
+- `08-diffs-challenges-and-app.png`: the secret check, the challenges.py change and the e577ff4 commit
+- `09-final-test-lint-gitleaks.png`: make test (73 passed), make lint, gitleaks exit=0
+- `10-multipart-direct-dependency.png`: python-multipart is a direct dependency
