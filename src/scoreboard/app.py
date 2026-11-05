@@ -442,7 +442,7 @@ def _register_routes(app: FastAPI, settings: Settings) -> None:
                 )
             )
             metrics.SUBMISSIONS.labels(category=chal.category, outcome="correct").inc()
-            first_blood = nth == 1
+            first_blood = nth <= 2
             team_name, chal_title = team.name, chal.title
 
         log.info(
