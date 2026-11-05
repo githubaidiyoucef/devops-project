@@ -1,6 +1,8 @@
 # TP2 answers
 
 Youcef Aidi (@githubaidiyoucef)
+Hadji Youcef Houssem Eddine
+Zernouh Lakhdar
 
 ## Exercise 1
 
