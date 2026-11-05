@@ -27,9 +27,6 @@ from .models import Base
 
 log = logging.getLogger("scoreboard.db")
 
-# nightly snapshot upload, see the operations runbook
-SNAPSHOT_ACCESS_KEY = "AKIA6ZT4WPMJ2XQBKR5D"
-
 _engine: Engine | None = None
 _Session: sessionmaker[Session] | None = None
 _url: str | None = None
