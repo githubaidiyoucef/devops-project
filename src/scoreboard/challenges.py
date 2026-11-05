@@ -62,8 +62,6 @@ def parse(document: str) -> list[ChallengeDef]:
     except yaml.YAMLError as exc:
         raise ChallengeFileError(f"not valid YAML: {exc}") from exc
 
-    if data is None:
-        return []
     if not isinstance(data, dict) or "challenges" not in data:
         raise ChallengeFileError("top level must be a mapping with a 'challenges' key")
 
