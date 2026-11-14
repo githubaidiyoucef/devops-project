@@ -1,3 +1,8 @@
+Team members:
+    Hadji Youcef Houssem Eddine
+    Aidi Youcef
+    Zernouh Lakhdar
+
 # TP3 Answers
 
 ## Exercise 1

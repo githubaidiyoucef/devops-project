@@ -1,3 +1,90 @@
+# CTF Scoreboard
+
+A small scoreboard for a capture-the-flag (CTF) competition. Teams register and
+submit flags. The scoreboard ranks the teams. A challenge is worth fewer points
+when more teams solve it.
+
+**You use this application in every lab session of the DevOps module.** You
+put it in Git and give it a pipeline. You put it in a container and deploy it
+to a cluster. You deliver it with GitOps, measure its errors and protect its
+supply chain. The code is small on purpose: the lab work is about DevOps, not
+about the code.
+
+Read this file once, at the start of lab sheet 1. Each lab sheet takes about
+one hour. **Are you new to Linux or to the command line?** Start with
+`docs/STUDENT-GUIDE.md`. It explains every step of every lab sheet, from the
+download of this folder to the end.
+
+---
+
+## Before lab sheet 1
+
+You need these tools on your own computer:
+
+| Tool | Version | How to check |
+|---|---|---|
+| Git | 2.30 or later | `git --version` |
+| Python | **3.11 or later** (3.12 is best: the pipeline and the container use it) | `python3.12 --version` |
+| `venv` support | Debian and Ubuntu install it separately: `sudo apt install python3.12-venv` | `python3.12 -m venv /tmp/t` |
+| make, curl, unzip | any | `make --version` |
+| gitleaks | 8.30 or later | `gitleaks version` |
+| GitHub CLI `gh` | 2.50 or later | `gh --version` |
+
+Each later lab sheet lists its own tools in the part *Before you start*. The
+table at the end of `docs/LAB-MAP.md` lists all of them.
+`docs/STUDENT-GUIDE.md` gives the exact commands to install them.
+
+> **Use a public GitHub repository.** On a free GitHub account, three features
+> work only on public repositories: branch protection (lab sheet 1), image
+> downloads from `ghcr.io` without a password (lab sheets 3–4), and build
+> attestations (lab sheet 6). Nothing in this repository is secret. The flags
+> in `docs/FLAGS.md` are public on purpose.
+
+---
+
+## Quick start
+
+```bash
+make install                           # .venv with the pinned dependencies,
+                                       # plus `pip install -e .` (see below)
+make test                              # 73 tests, about 3 seconds
+make lint                              # silent when clean
+ADMIN_TOKEN=local-dev-token make run   # http://localhost:8000/docs
+```
+
+`make install` uses the first Python 3.11 or later that it finds. It prefers
+3.12. To choose the version yourself, run `make install PY=python3.12`. You can
+also do the same steps by hand:
+
+```bash
+python3.12 -m venv .venv && . .venv/bin/activate
+pip install -r requirements-dev.txt
+pip install -e .                       # puts scoreboard/ on the path -- the
+                                       # tests cannot import it without this
+```
+
+Then, in a second terminal:
+
+```bash
+curl -s localhost:8000/healthz
+curl -s -X POST localhost:8000/teams \
+     -H 'content-type: application/json' -d '{"name":"my-team"}'
+curl -s -X POST localhost:8000/submit -H 'content-type: application/json' \
+     -d '{"team":"my-team","challenge":"warmup-banner","flag":"UEM9{read_the_banner}"}'
+curl -s localhost:8000/scoreboard
+```
+
+The flags of the demonstration competition are in `docs/FLAGS.md`.
+
+`tools/smoke.sh` runs all these requests against any host and port, for
+example `./tools/smoke.sh localhost:8080`. You use it from lab sheet 3. It
+checks that a container or a deployment really *works*. A process that
+*runs* does not always work. Be careful: if `ADMIN_TOKEN` is exported in your
+shell, the smoke test also calls `/admin/reset`. This deletes the whole
+competition.
+
+---
+
 ## What is missing on purpose
 
 There is **no `Dockerfile`, no `.dockerignore`, no `.github/workflows/`, no
@@ -249,3 +336,5 @@ MIT. See `LICENSE`. You may keep this repository and put it in your portfolio.
 
 ## Contributors
 - Youcef Abdelkader AIDI
+- Hadji Youcef Houssem Eddine
+- Zernouh Lakhdar
